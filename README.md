@@ -10,6 +10,8 @@ The current phase contains:
 - An Express server with Socket.IO initialized
 - A basic `GET /api/health` endpoint
 - A delayed mock BSE `GET /getTrades` endpoint with 3,000 seeded trades
+- An asynchronous `POST /api/pull` workflow with in-memory trade state
+- A fast `GET /api/trades` endpoint for reading the current state
 
 ## Run the client
 
@@ -32,3 +34,5 @@ npm run dev
 The server runs at `http://localhost:3000` by default. Set `PORT` in a local `.env` file to use a different port.
 
 Copy `server/.env.example` to `server/.env` to configure the mock BSE delay. `BSE_DELAY_MS` defaults to 5,000 milliseconds when it is missing or invalid and can be set to `900000` to simulate a 15-minute pull.
+
+`BSE_API_URL` identifies the mock BSE server. It defaults to the current Express server, so the application calls `/getTrades` over HTTP while keeping the mock API boundary clear.
