@@ -11,6 +11,7 @@ function App() {
 
   useEffect(() => {
     let isMounted = true
+    let hasConnected = false
     const socket = io()
 
     const loadTradeState = async (errorMessage) => {
@@ -39,6 +40,14 @@ function App() {
       setLastPullError(null)
     }
 
+    const handleSocketConnect = () => {
+      if (hasConnected) {
+        loadTradeState('Unable to refresh trades after reconnecting.')
+      }
+
+      hasConnected = true
+    }
+
     const handlePullCompleted = () => {
       setPullInProgress(false)
       loadTradeState('Unable to refresh trades after the pull completed.')
@@ -50,6 +59,7 @@ function App() {
       loadTradeState(event.message)
     }
 
+    socket.on('connect', handleSocketConnect)
     socket.on('pull-started', handlePullStarted)
     socket.on('pull-completed', handlePullCompleted)
     socket.on('pull-failed', handlePullFailed)
@@ -58,6 +68,7 @@ function App() {
 
     return () => {
       isMounted = false
+      socket.off('connect', handleSocketConnect)
       socket.off('pull-started', handlePullStarted)
       socket.off('pull-completed', handlePullCompleted)
       socket.off('pull-failed', handlePullFailed)
