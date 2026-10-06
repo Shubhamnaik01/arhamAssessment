@@ -12,6 +12,7 @@ The current phase contains:
 - A delayed mock BSE `GET /getTrades` endpoint with 3,000 seeded trades
 - An asynchronous `POST /api/pull` workflow with in-memory trade state
 - A fast `GET /api/trades` endpoint for reading the current state
+- Lightweight Socket.IO notifications when a pull starts, completes, or fails
 
 ## Run the client
 

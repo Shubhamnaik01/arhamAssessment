@@ -8,7 +8,7 @@ import { seedTrades } from './data/seedTrades.js'
 const app = express()
 const httpServer = createServer(app)
 
-new Server(httpServer)
+const io = new Server(httpServer)
 
 const port = process.env.PORT || 3000
 const bseApiUrl =
@@ -34,6 +34,19 @@ const pullTradesFromBse = async () => {
   } finally {
     pullInProgress = false
   }
+
+  if (lastPullError) {
+    io.emit('pull-failed', {
+      message: lastPullError,
+    })
+    return
+  }
+
+  io.emit('pull-completed', {
+    message: 'Trade pull completed',
+    tradeCount: pulledTrades.length,
+    lastCompletedAt,
+  })
 }
 
 app.get('/api/health', (request, response) => {
@@ -58,6 +71,10 @@ app.post('/api/pull', (request, response) => {
 
   pullInProgress = true
   lastPullError = null
+
+  io.emit('pull-started', {
+    message: 'Trade pull started',
+  })
 
   // Start the pull without waiting so this request can return immediately.
   pullTradesFromBse()
